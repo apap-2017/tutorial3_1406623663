@@ -14,55 +14,59 @@ import com.example.tutorial3.model.StudentModel;
 
 @Controller
 public class StudentController {
-	private final StudentService studentService;
+ private final StudentService studentService;
 
-	public StudentController() {
-		studentService = new InMemoryStudentService();
-	}
+ public StudentController() {
+  studentService = new InMemoryStudentService();
+ }
 
-	@RequestMapping("/student/add")
-	public String add(@RequestParam(value = "npm", required = true) String npm,
-			@RequestParam(value = "name", required = true) String name,
-			@RequestParam(value = "gpa", required = true) double gpa) {
-		StudentModel student = new StudentModel(npm, name, gpa);
-		studentService.addStudent(student);
-		return "add";
-	}
+ @RequestMapping("/student/add")
+ public String add(@RequestParam(value = "npm", required = true) String npm,
+   @RequestParam(value = "name", required = true) String name,
+   @RequestParam(value = "gpa", required = true) double gpa) {
+  StudentModel student = new StudentModel(npm, name, gpa);
+  studentService.addStudent(student);
+  return "add";
+ }
 
-	/*
-	 * @RequestMapping("/student/view") public String view(Model
-	 * model, @RequestParam(value = "npm", required = true) String npm) {
-	 * StudentModel student = studentService.selectStudent(npm);
-	 * model.addAttribute("student", student); return "view"; }
-	 */
+ /*
+  * @RequestMapping("/student/view") public String view(Model
+  * model, @RequestParam(value = "npm", required = true) String npm) {
+  * StudentModel student = studentService.selectStudent(npm);
+  * model.addAttribute("student", student); return "view"; }
+  */
 
-	@RequestMapping("/student/viewall")
-	public String viewAll(Model model) {
-		List<StudentModel> students = studentService.selectAllStudents();
-		model.addAttribute("students", students);
-		return "viewall";
-	}
+ @RequestMapping("/student/viewall")
+ public String viewAll(Model model) {
+  List<StudentModel> students = studentService.selectAllStudents();
+  model.addAttribute("students", students);
+  return "viewall";
+ }
 
-	@RequestMapping(value = { "student/view", "/student/view/{npm}" })
-	public String viewPath(@PathVariable(required = false) String npm, Model model) {
-		if (npm != null) {
-			String tnpm = "" + npm;
-			StudentModel student = studentService.selectStudent(tnpm);
-			model.addAttribute("student", student);
-		} else {
-			return "page_error";
-		}
-		return "view";
-	}
+ @RequestMapping(value = { "student/view", "/student/view/{npm}" })
+ public String viewPath(@PathVariable(required = false) String npm, Model model) {
+  if (npm != null) {
+   String tnpm = "" + npm;
+   StudentModel student = studentService.selectStudent(tnpm);
+   model.addAttribute("student", student);
+  } else {
+   return "page_error";
+  }
+  return "view";
+ }
 
-	@RequestMapping(value = { "student/delete", "/student/delete/{npm}" })
-	public String delete(@PathVariable(required = false) String npm, Model model) {
-		if (npm != null) {
-			boolean tmp = studentService.delete(npm);
-			 model.addAttribute("deleted", tmp);
-			 return "delete";
-		} else {
-			return "page_error";
-		}
-	}
+ @RequestMapping(value = { "student/delete", "/student/delete/{npm}" })
+ public String delete(@PathVariable(required = false) String npm, Model model) {
+  if (npm != null) {
+   if (studentService.selectStudent(npm) != null) {
+   boolean tmp = studentService.delete(npm);
+    model.addAttribute("deleted", tmp);
+    return "delete";
+   } else {
+    return "page_error";
+   }
+  } else {
+   return "page_error";
+  }
+ }
 }
